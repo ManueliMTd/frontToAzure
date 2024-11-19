@@ -22,19 +22,22 @@ jobs:
           submodules: true
           lfs: false
 
-      # Acceso dinámico a los secretos basado en el nombre de la rama
+      # Inyectar variables dinámicamente según la rama
       - name: Inject environment variables dynamically
-        env:
-          REACT_APP_API_MAIN: ${{ secrets.REACT_APP_API_MAIN }}
-          REACT_APP_API_AURITAS: ${{ secrets.REACT_APP_API_AURITAS }}
         run: |
           branch_name=$(echo "${GITHUB_REF_NAME}" | tr '[:lower:]' '[:upper:]') # Convierte a mayúsculas
-          secret_var="REACT_APP_API_${branch_name}"
-          api_url=${!secret_var} # Usa indirect expansion para obtener el valor del secreto
-          if [ -z "$api_url" ]; then
-            echo "ERROR: No se encontró un secreto para la rama $branch_name" >&2
-            exit 1
-          fi
+          case "$branch_name" in
+            MAIN)
+              api_url="${{ secrets.REACT_APP_API_MAIN }}"
+              ;;
+            AURITAS)
+              api_url="${{ secrets.REACT_APP_API_AURITAS }}"
+              ;;
+            *)
+              echo "ERROR: No se encontró un secreto para la rama $branch_name" >&2
+              exit 1
+              ;;
+          esac
           echo "REACT_APP_API_URL=$api_url" >> .env
 
       # Build and Deploy
