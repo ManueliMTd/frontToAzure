@@ -13,6 +13,7 @@ import {
   Typography,
   IconButton,
 } from "@mui/material";
+import { API_BASE_URL } from "../config";
 import { FaEdit, FaTrash } from "react-icons/fa"; // Importar iconos de react-icons
 
 const ConnectionManager = () => {
@@ -32,7 +33,7 @@ const ConnectionManager = () => {
 
   const fetchConnections = async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/connections`);
+      const response = await fetch(`${API_BASE_URL}/connections`);
       const data = await response.json();
 
       // Convertir data a array si es un objeto
@@ -78,8 +79,8 @@ const ConnectionManager = () => {
   const handleSaveConnection = async () => {
     const method = editMode ? "PUT" : "POST";
     const endpoint = editMode
-      ? `${process.env.REACT_APP_API_URL}/connections/${currentConnection.name}`
-      : `${process.env.REACT_APP_API_URL}/connections`;
+      ? `${API_BASE_URL}/connections/${currentConnection.name}`
+      : `${API_BASE_URL}/connections`;
 
     const payload = {
       connection_name: currentConnection.name,
@@ -101,7 +102,7 @@ const ConnectionManager = () => {
   };
 
   const handleDeleteConnection = async (name) => {
-    await fetch(`${process.env.REACT_APP_API_URL}/connections/${name}`, { method: "DELETE" });
+    await fetch(`${API_BASE_URL}/connections/${name}`, { method: "DELETE" });
     fetchConnections();
   };
 

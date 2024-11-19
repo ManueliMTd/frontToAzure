@@ -15,6 +15,7 @@ import {
   Typography,
   IconButton,
 } from "@mui/material";
+import { API_BASE_URL } from "../config";
 import { FaEdit, FaTrash } from "react-icons/fa"; // Importar iconos de react-icons
 
 const DestinationManager = () => {
@@ -33,13 +34,13 @@ const DestinationManager = () => {
   }, []);
 
   const fetchDestinations = async () => {
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/destinations`);
+    const response = await fetch(`${API_BASE_URL}/destinations`);
     const data = await response.json();
     setDestinations(Object.entries(data)); // Convertir a array de pares [contRep, connection_name]
   };
 
   const fetchConnections = async () => {
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/connections`);
+    const response = await fetch(`${API_BASE_URL}/connections`);
     const data = await response.json();
     setConnections(Object.keys(data));
   };
@@ -61,8 +62,8 @@ const DestinationManager = () => {
   const handleSaveDestination = async () => {
     const method = editMode ? "PUT" : "POST";
     const endpoint = editMode
-      ? `${process.env.REACT_APP_API_URL}/destinations/${currentDestination.contRep}`
-      : `${process.env.REACT_APP_API_URL}/destinations`;
+      ? `${API_BASE_URL}/destinations/${currentDestination.contRep}`
+      : `${API_BASE_URL}/destinations`;
 
     // Construir el payload según el método
     const payload = editMode
@@ -83,7 +84,7 @@ const DestinationManager = () => {
   };
 
   const handleDeleteDestination = async (contRep) => {
-    await fetch(`${process.env.REACT_APP_API_URL}/destinations/${contRep}`, {
+    await fetch(`${API_BASE_URL}/destinations/${contRep}`, {
       method: "DELETE",
     });
     fetchDestinations();
