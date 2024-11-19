@@ -33,6 +33,8 @@ const ConnectionManager = () => {
 
   const fetchConnections = async () => {
     try {
+      console.log(`${API_BASE_URL}/connections`);
+
       const response = await fetch(`${API_BASE_URL}/connections`);
       const data = await response.json();
 
