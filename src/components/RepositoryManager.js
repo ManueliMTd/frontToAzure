@@ -25,8 +25,8 @@ const RepositoryManager = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [currentRepo, setCurrentRepo] = useState({
-    name: "",
-    storage: "",
+    contRep: "",
+    connection_name: "",
   });
 
   useEffect(() => {
@@ -46,27 +46,27 @@ const RepositoryManager = () => {
     setConnections(Object.keys(data));
   };
 
-  const handleDialogOpen = (repo = { name: "", storage: "" }) => {
+  const handleDialogOpen = (repo = { contRep: "", connection_name: "" }) => {
     setCurrentRepo(repo);
-    setEditMode(!!repo.name);
+    setEditMode(!!repo.contRep);
     setDialogOpen(true);
   };
 
   const handleDialogClose = () => {
     setDialogOpen(false);
-    setCurrentRepo({ name: "", storage: "" });
+    setCurrentRepo({ contRep: "", connection_name: "" });
     setEditMode(false);
   };
 
   const handleSaveRepo = async () => {
     const method = editMode ? "PUT" : "POST";
     const endpoint = editMode
-      ? `${API_BASE_URL}/destinations/${currentRepo.name}`
+      ? `${API_BASE_URL}/destinations/${currentRepo.contRep}`
       : `${API_BASE_URL}/destinations`;
 
     const payload = editMode
-      ? { storage: currentRepo.storage }
-      : { name: currentRepo.name, storage: currentRepo.storage };
+      ? { connection_name: currentRepo.connection_name }
+      : { contRep: currentRepo.contRep, connection_name: currentRepo.connection_name };
 
     await fetch(endpoint, {
       method,
@@ -78,8 +78,8 @@ const RepositoryManager = () => {
     handleDialogClose();
   };
 
-  const handleDeleteRepo = async (name) => {
-    await fetch(`${API_BASE_URL}/destinations/${name}`, { method: "DELETE" });
+  const handleDeleteRepo = async (contRep) => {
+    await fetch(`${API_BASE_URL}/destinations/${contRep}`, { method: "DELETE" });
     fetchRepositories();
   };
 
@@ -95,17 +95,17 @@ const RepositoryManager = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {repositories.map(([name, storage]) => (
-              <TableRow key={name}>
-                <TableCell>{name}</TableCell>
-                <TableCell>{storage}</TableCell>
+            {repositories.map(([contRep, connection_name]) => (
+              <TableRow key={contRep}>
+                <TableCell>{contRep}</TableCell>
+                <TableCell>{connection_name}</TableCell>
                 <TableCell align="center">
-                  <Button onClick={() => handleDialogOpen({ name, storage })}>
+                  <Button onClick={() => handleDialogOpen({ contRep, connection_name })}>
                     <FaEdit />
                   </Button>
                   <Button
                     color="secondary"
-                    onClick={() => handleDeleteRepo(name)}
+                    onClick={() => handleDeleteRepo(contRep)}
                   >
                     <FaTrash />
                   </Button>
@@ -132,9 +132,9 @@ const RepositoryManager = () => {
         <DialogContent>
           <TextField
             label="Repository Name"
-            value={currentRepo.name}
+            value={currentRepo.contRep}
             onChange={(e) =>
-              setCurrentRepo({ ...currentRepo, name: e.target.value })
+              setCurrentRepo({ ...currentRepo, contRep: e.target.value })
             }
             fullWidth
             margin="dense"
@@ -142,16 +142,16 @@ const RepositoryManager = () => {
           />
           <Select
             label="Select Storage"
-            value={currentRepo.storage}
+            value={currentRepo.connection_name}
             onChange={(e) =>
-              setCurrentRepo({ ...currentRepo, storage: e.target.value })
+              setCurrentRepo({ ...currentRepo, connection_name: e.target.value })
             }
             fullWidth
             margin="dense"
           >
-            {connections.map((storage) => (
-              <MenuItem key={storage} value={storage}>
-                {storage}
+            {connections.map((connection_name) => (
+              <MenuItem key={connection_name} value={connection_name}>
+                {connection_name}
               </MenuItem>
             ))}
           </Select>
