@@ -7,7 +7,6 @@ import {
   TableHead,
   TableRow,
   Button,
-  Typography,
   Chip,
 } from "@mui/material";
 

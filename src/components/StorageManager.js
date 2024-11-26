@@ -12,7 +12,6 @@ import {
   DialogContent,
   DialogTitle,
   TextField,
-  Typography,
   Chip,
 } from "@mui/material";
 import { FaEdit, FaTrash } from "react-icons/fa";

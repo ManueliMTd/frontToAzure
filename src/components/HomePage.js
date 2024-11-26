@@ -36,7 +36,7 @@ ChartJS.register(
 function HomePage({ setIsLoggedIn }) {
   const repositoriesRef = useRef(null);
   const storagesRef = useRef(null);
-  const [addCertificatesToStorages, setAddCertificatesToStorages] =
+  const [, setAddCertificatesToStorages] =
     useState(false);
   const [openModal, setOpenModal] = useState(false);
 
