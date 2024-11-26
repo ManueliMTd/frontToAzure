@@ -1,5 +1,5 @@
 {
-  "name": "document-crud",
+  "name": "auritas-storage-manager",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
