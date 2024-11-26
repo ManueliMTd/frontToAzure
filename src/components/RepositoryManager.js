@@ -29,6 +29,13 @@ const RepositoryManager = () => {
     connection_name: "",
   });
 
+  // Mock data for remaining space
+  const remainingSpaceData = {
+    repo1: "10 GB",
+    repo2: "5 GB",
+    repo3: "15 GB",
+  };
+
   useEffect(() => {
     fetchRepositories();
     fetchStorages();
@@ -66,7 +73,10 @@ const RepositoryManager = () => {
 
     const payload = editMode
       ? { connection_name: currentRepo.connection_name }
-      : { contRep: currentRepo.contRep, connection_name: currentRepo.connection_name };
+      : {
+          contRep: currentRepo.contRep,
+          connection_name: currentRepo.connection_name,
+        };
 
     await fetch(endpoint, {
       method,
@@ -79,8 +89,30 @@ const RepositoryManager = () => {
   };
 
   const handleDeleteRepo = async (contRep) => {
-    await fetch(`${API_BASE_URL}/destinations/${contRep}`, { method: "DELETE" });
+    await fetch(`${API_BASE_URL}/destinations/${contRep}`, {
+      method: "DELETE",
+    });
     fetchRepositories();
+  };
+
+  const handleDownloadPreviousRepositories = (contRep) => {
+    const mockData = {
+      repoName: contRep,
+      urls: [
+        "https://example.com/file1",
+        "https://example.com/file2",
+        "https://example.com/file3",
+      ],
+    };
+
+    const blob = new Blob([JSON.stringify(mockData, null, 2)], {
+      type: "application/json",
+    });
+
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `${contRep}_previous_repositories.json`;
+    link.click();
   };
 
   return (
@@ -91,6 +123,7 @@ const RepositoryManager = () => {
             <TableRow>
               <TableCell>Name</TableCell>
               <TableCell>Storage</TableCell>
+              <TableCell>Remaining Space</TableCell>
               <TableCell align="center">Actions</TableCell>
             </TableRow>
           </TableHead>
@@ -99,8 +132,22 @@ const RepositoryManager = () => {
               <TableRow key={contRep}>
                 <TableCell>{contRep}</TableCell>
                 <TableCell>{connection_name}</TableCell>
+                <TableCell>
+                  {remainingSpaceData[contRep] || "Unknown"}
+                </TableCell>
                 <TableCell align="center">
-                  <Button onClick={() => handleDialogOpen({ contRep, connection_name })}>
+                  <Button
+                    variant="contained"
+                    color="default"
+                    onClick={() => handleDownloadPreviousRepositories(contRep)}
+                  >
+                    Previous Storages
+                  </Button>
+                  <Button
+                    onClick={() =>
+                      handleDialogOpen({ contRep, connection_name })
+                    }
+                  >
                     <FaEdit />
                   </Button>
                   <Button
@@ -144,7 +191,10 @@ const RepositoryManager = () => {
             label="Select Storage"
             value={currentRepo.connection_name}
             onChange={(e) =>
-              setCurrentRepo({ ...currentRepo, connection_name: e.target.value })
+              setCurrentRepo({
+                ...currentRepo,
+                connection_name: e.target.value,
+              })
             }
             fullWidth
             margin="dense"
