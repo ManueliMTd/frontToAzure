@@ -147,7 +147,7 @@ const StorageManager = () => {
                     }}
                   />
                 </TableCell>
-                <TableCell align="center" style={{display:"flex", flexDirection:"row", alignContent:"space-around", width:"100%"}}>
+                <TableCell align="center" style={{display:"flex", flexDirection:"row", alignContent:"space-around", width:"90%"}}>
                   <Button
                     variant="outlined"
                     color="primary"
