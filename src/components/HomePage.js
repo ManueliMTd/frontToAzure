@@ -22,6 +22,11 @@ import {
 import RepositoryManager from "./RepositoryManager";
 import StorageManager from "./StorageManager";
 import CertificatesManager from "./CertificatesManager";
+import { IconButton } from "@mui/material";
+import { ToastContainer } from "react-toastify"; // Importa react-toastify
+import "react-toastify/dist/ReactToastify.css"; // Asegúrate de importar los estilos
+
+import { API_BASE_URL } from "../config";
 
 // Registrar elementos y escalas
 ChartJS.register(
@@ -36,8 +41,7 @@ ChartJS.register(
 function HomePage({ setIsLoggedIn }) {
   const repositoriesRef = useRef(null);
   const storagesRef = useRef(null);
-  const [, setAddCertificatesToStorages] =
-    useState(false);
+  const [, setAddCertificatesToStorages] = useState(false);
   const [openModal, setOpenModal] = useState(false);
 
   useEffect(() => {
@@ -46,6 +50,18 @@ function HomePage({ setIsLoggedIn }) {
     setAddCertificatesToStorages(storagesHeight <= repositoriesHeight);
   }, []);
 
+  const url = `${API_BASE_URL}/contentserver/receive`;
+
+  const handleCopyClick = () => {
+    navigator.clipboard.writeText(url).then(
+      () => {
+        window.alert("URL copied to clipboard!");
+      },
+      () => {
+        window.alert("Failed to copy URL!");
+      }
+    );
+  };
   const handleOpenModal = () => setOpenModal(true);
   const handleCloseModal = () => setOpenModal(false);
 
@@ -138,45 +154,88 @@ function HomePage({ setIsLoggedIn }) {
             </Typography>
           </div>
 
-          <div style={{ display: "flex", alignItems: "center" }}>
-          <Typography
-              variant="body1"
-              style={{
-                fontSize: "16px",
-                color: "#555",
-                fontWeight: "500",
-                marginRight:"50px"
-              }}
-            >
-              License Valid Until: <span style={{ fontWeight: "bold" }}>Saturday, May 31, 2025</span>
-            </Typography>
-            <Typography
-              variant="body1"
-              style={{
-                fontSize: "16px",
-                color: "#555",
-                fontWeight: "500",
-              }}
-            >
-              Logged as: <span style={{ fontWeight: "bold" }}>admin</span>
-            </Typography>
-            <Typography
-              component="button"
-              onClick={() => setIsLoggedIn(false)}
-              style={{
-                fontSize: "16px",
-                color: "#555",
-                marginLeft: "10px",
-                marginRight: "20px",
-                fontWeight: "500",
-                backgroundColor: "transparent",
-                border: "none",
-                cursor: "pointer",
-                textDecoration: "underline",
-              }}
-            >
-              Log Out
-            </Typography>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "end",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <Typography
+                variant="body1"
+                style={{
+                  fontSize: "16px",
+                  color: "#555",
+                  fontWeight: "500",
+                  marginRight: "50px",
+                }}
+              >
+                License Valid Until:{" "}
+                <span style={{ fontWeight: "bold" }}>
+                  Saturday, May 31, 2025
+                </span>
+              </Typography>
+              <Typography
+                variant="body1"
+                style={{
+                  fontSize: "16px",
+                  color: "#555",
+                  fontWeight: "500",
+                }}
+              >
+                Logged as: <span style={{ fontWeight: "bold" }}>admin</span>
+              </Typography>
+              <Typography
+                component="button"
+                onClick={() => setIsLoggedIn(false)}
+                style={{
+                  fontSize: "16px",
+                  color: "#555",
+                  marginLeft: "10px",
+                  marginRight: "20px",
+                  fontWeight: "500",
+                  backgroundColor: "transparent",
+                  border: "none",
+                  cursor: "pointer",
+                  textDecoration: "underline",
+                }}
+              >
+                Log Out
+              </Typography>
+            </div>
+            <div>
+              <Typography
+                style={{
+                  marginRight: "20px",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                Your SAP Content Server URL:
+                <a
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    marginLeft: "8px",
+                    textDecoration: "underline",
+                    color: "blue",
+                  }}
+                >
+                  {url}
+                </a>
+                {/* Usamos un emoji de copiar */}
+                <span
+                  onClick={handleCopyClick}
+                  style={{ marginLeft: "8px", cursor: "pointer" }}
+                  role="img"
+                  aria-label="copy-icon"
+                >
+                  📋 {/* Emoji de portapapeles */}
+                </span>
+              </Typography>
+            </div>
           </div>
         </div>
 
