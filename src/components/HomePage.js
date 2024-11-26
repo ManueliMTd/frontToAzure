@@ -139,6 +139,17 @@ function HomePage({ setIsLoggedIn }) {
           </div>
 
           <div style={{ display: "flex", alignItems: "center" }}>
+          <Typography
+              variant="body1"
+              style={{
+                fontSize: "16px",
+                color: "#555",
+                fontWeight: "500",
+                marginRight:"50px"
+              }}
+            >
+              License Valid Until: <span style={{ fontWeight: "bold" }}>Saturday, May 31, 2025</span>
+            </Typography>
             <Typography
               variant="body1"
               style={{

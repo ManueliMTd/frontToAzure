@@ -147,24 +147,23 @@ const StorageManager = () => {
                     }}
                   />
                 </TableCell>
-                <TableCell align="center">
+                <TableCell align="center" style={{display:"flex", flexDirection:"row", alignContent:"space-around", width:"100%"}}>
                   <Button
                     variant="outlined"
                     color="primary"
+                    style={{maxWidth:"200px", fontSize:"12px"}}
                     onClick={() => handleDownloadConfiguration(storage)}
                   >
                     Download Configuration
                   </Button>
                   <Button
                     onClick={() => handleDialogOpen(storage)}
-                    style={{ marginLeft: "10px" }}
                   >
                     <FaEdit />
                   </Button>
                   <Button
                     color="secondary"
                     onClick={() => handleDeleteStorage(storage.name)}
-                    style={{ marginLeft: "10px" }}
                   >
                     <FaTrash />
                   </Button>
