@@ -135,8 +135,9 @@ const RepositoryManager = () => {
                 <TableCell>
                   {remainingSpaceData[contRep] || "Unknown"}
                 </TableCell>
-                <TableCell align="center">
+                <TableCell style={{display:"flex", flexDirection:"row", width:"90%"}}>
                   <Button
+                    style={{ width: "70%" }}
                     variant="contained"
                     color="default"
                     onClick={() => handleDownloadPreviousRepositories(contRep)}
@@ -144,6 +145,7 @@ const RepositoryManager = () => {
                     Previous Storages
                   </Button>
                   <Button
+                    style={{ width: "15%" }}
                     onClick={() =>
                       handleDialogOpen({ contRep, connection_name })
                     }
@@ -151,6 +153,7 @@ const RepositoryManager = () => {
                     <FaEdit />
                   </Button>
                   <Button
+                    style={{ width: "15%" }}
                     color="secondary"
                     onClick={() => handleDeleteRepo(contRep)}
                   >
