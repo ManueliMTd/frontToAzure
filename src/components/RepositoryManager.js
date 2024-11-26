@@ -142,7 +142,7 @@ const RepositoryManager = () => {
                     color="default"
                     onClick={() => handleDownloadPreviousRepositories(contRep)}
                   >
-                    Previous Storages
+                    Prev Storages
                   </Button>
                   <Button
                     style={{ width: "15%" }}
