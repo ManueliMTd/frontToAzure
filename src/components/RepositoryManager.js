@@ -90,19 +90,16 @@ const RepositoryManager = () => {
 
   const handleValidateCertificate = async (contRep) => {
     try {
-      // Construcción de la URL con parámetros de consulta
       const response = await fetch(
-        `${API_BASE_URL}/validate-certificate?contRep=${encodeURIComponent(
-          contRep
-        )}`
+        `${API_BASE_URL}/validate-certificate?contRep=${contRep}`
       );
 
-      if (!response.ok) {
-        throw new Error(`Validation failed with status: ${response.status}`);
+      if (response.ok) {
+        const text = await response.text(); // Leer como texto plano
+        alert(`Validation Result: ${text}`);
+      } else {
+        alert(`Error validating certificate: ${response.statusText}`);
       }
-
-      const data = await response.json();
-      alert(`Validation Result: ${data.message}`);
     } catch (error) {
       alert(`Error validating certificate: ${error.message}`);
     }
