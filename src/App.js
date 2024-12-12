@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Login from "./components/Login";
 import ForgetPassword from "./components/ForgetPassword";
 import HomePage from "./components/HomePage";
@@ -6,6 +6,23 @@ import HomePage from "./components/HomePage";
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showForgetPassword, setShowForgetPassword] = useState(false);
+
+  // Cargar el estado de inicio de sesión desde localStorage al cargar el componente
+  useEffect(() => {
+    const loggedInStatus = localStorage.getItem("isLoggedIn");
+    setIsLoggedIn(loggedInStatus === "true");
+  }, []);
+
+  // Guardar el estado de inicio de sesión en localStorage
+  const handleLogin = () => {
+    setIsLoggedIn(true);
+    localStorage.setItem("isLoggedIn", "true");
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    localStorage.removeItem("isLoggedIn");
+  };
 
   return (
     <div>
@@ -17,12 +34,12 @@ function App() {
               flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
-              minHeight: "100vh", // Asegura que el contenido ocupe toda la altura de la ventana
+              minHeight: "100vh",
               minWidth: "100vw",
-              backgroundColor: "#f5f5f5", // Fondo para diferenciar del login
+              backgroundColor: "#f5f5f5",
             }}
           >
-            <ForgetPassword onBack={() => setShowForgetPassword(false)} />{" "}
+            <ForgetPassword onBack={() => setShowForgetPassword(false)} />
           </div>
         ) : (
           <div
@@ -31,19 +48,19 @@ function App() {
               flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
-              minHeight: "100vh", // Asegura que el contenido ocupe toda la altura de la ventana
+              minHeight: "100vh",
               minWidth: "100vw",
-              backgroundColor: "#f5f5f5", // Fondo para diferenciar del login
+              backgroundColor: "#f5f5f5",
             }}
           >
             <Login
-              onLogin={() => setIsLoggedIn(true)}
+              onLogin={handleLogin}
               onForgetPassword={() => setShowForgetPassword(true)}
             />
           </div>
         )
       ) : (
-        <HomePage setIsLoggedIn={setIsLoggedIn} />
+        <HomePage setIsLoggedIn={handleLogout} />
       )}
     </div>
   );

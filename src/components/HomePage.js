@@ -21,7 +21,6 @@ import {
 } from "chart.js";
 import RepositoryManager from "./RepositoryManager";
 import StorageManager from "./StorageManager";
-import CertificatesManager from "./CertificatesManager";
 
 import { API_BASE_URL } from "../config";
 
@@ -48,6 +47,18 @@ function HomePage({ setIsLoggedIn }) {
   }, []);
 
   const url = `${API_BASE_URL}/sap`;
+
+  const handleLogout = () => {
+    // Eliminar datos guardados en localStorage o sessionStorage
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("user");
+
+    // Actualizar estado de sesión
+    setIsLoggedIn(false);
+
+    // Redirigir al login (si aplica navegación)
+    window.location.href = "/login"; // Cambia "/login" según tu ruta de login
+  };
 
   const handleCopyClick = () => {
     navigator.clipboard.writeText(url).then(
@@ -185,7 +196,7 @@ function HomePage({ setIsLoggedIn }) {
               </Typography>
               <Typography
                 component="button"
-                onClick={() => setIsLoggedIn(false)}
+                onClick={handleLogout}
                 style={{
                   fontSize: "16px",
                   color: "#555",
@@ -264,17 +275,14 @@ function HomePage({ setIsLoggedIn }) {
                 </Typography>
                 <RepositoryManager />
               </Paper>
-
-              <Paper
-                style={{
-                  padding: "20px",
-                }}
+              <Button
+                variant="contained"
+                color="primary"
+                style={{ marginTop: "20px" }}
+                onClick={handleOpenModal}
               >
-                <Typography variant="h5" color="primary" gutterBottom>
-                  Certificates
-                </Typography>
-                <CertificatesManager />
-              </Paper>
+                View Traffic and Statistics
+              </Button>
             </div>
           </Grid>
 
@@ -292,14 +300,6 @@ function HomePage({ setIsLoggedIn }) {
                 </Typography>
                 <StorageManager />
               </Paper>
-              <Button
-                variant="contained"
-                color="primary"
-                style={{ marginTop: "20px" }}
-                onClick={handleOpenModal}
-              >
-                View Traffic and Statistics
-              </Button>
             </div>
           </Grid>
         </Grid>

@@ -29,13 +29,6 @@ const RepositoryManager = () => {
     connection_name: "",
   });
 
-  // Mock data for remaining space
-  const remainingSpaceData = {
-    repo1: "10 GB",
-    repo2: "5 GB",
-    repo3: "15 GB",
-  };
-
   useEffect(() => {
     fetchRepositories();
     fetchStorages();
@@ -95,24 +88,16 @@ const RepositoryManager = () => {
     fetchRepositories();
   };
 
-  const handleDownloadPreviousRepositories = (contRep) => {
-    const mockData = {
-      repoName: contRep,
-      urls: [
-        "https://example.com/file1",
-        "https://example.com/file2",
-        "https://example.com/file3",
-      ],
-    };
-
-    const blob = new Blob([JSON.stringify(mockData, null, 2)], {
-      type: "application/json",
-    });
-
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = `${contRep}_previous_repositories.json`;
-    link.click();
+  const handleValidateCertificate = async (contRep) => {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/validate-certificate/${contRep}`
+      );
+      const data = await response.json();
+      alert(`Validation Result: ${data.message}`);
+    } catch (error) {
+      alert(`Error validating certificate: ${error.message}`);
+    }
   };
 
   return (
@@ -123,7 +108,6 @@ const RepositoryManager = () => {
             <TableRow>
               <TableCell>Name</TableCell>
               <TableCell>Storage</TableCell>
-              <TableCell>Remaining Space</TableCell>
               <TableCell align="center">Actions</TableCell>
             </TableRow>
           </TableHead>
@@ -132,17 +116,20 @@ const RepositoryManager = () => {
               <TableRow key={contRep}>
                 <TableCell>{contRep}</TableCell>
                 <TableCell>{connection_name}</TableCell>
-                <TableCell>
-                  {remainingSpaceData[contRep] || "Unknown"}
-                </TableCell>
-                <TableCell style={{display:"flex", flexDirection:"row", width:"90%"}}>
+                <TableCell
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    width: "90%",
+                  }}
+                >
                   <Button
                     style={{ width: "70%" }}
                     variant="contained"
                     color="default"
-                    onClick={() => handleDownloadPreviousRepositories(contRep)}
+                    onClick={() => handleValidateCertificate(contRep)}
                   >
-                    Prev Storages
+                    Validate Certificate
                   </Button>
                   <Button
                     style={{ width: "15%" }}
@@ -176,7 +163,7 @@ const RepositoryManager = () => {
 
       {/* Dialog for Add/Edit */}
       <Dialog open={dialogOpen} onClose={handleDialogClose}>
-        <DialogTitle> 
+        <DialogTitle>
           {editMode ? "Edit Repository" : "Add New Repository"}
         </DialogTitle>
         <DialogContent>
