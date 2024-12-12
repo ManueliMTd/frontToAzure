@@ -13,6 +13,10 @@ import {
   DialogTitle,
   TextField,
   Chip,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
 import { FaEdit, FaTrash } from "react-icons/fa";
 
@@ -25,7 +29,7 @@ const StorageManager = () => {
   const [currentStorage, setCurrentStorage] = useState({
     name: "",
     type: "",
-    connection_string: "",
+    data: {},
   });
 
   useEffect(() => {
@@ -42,9 +46,8 @@ const StorageManager = () => {
         : Object.keys(data).map((key, index) => ({
             name: key,
             type: data[key].cloud,
-            connection_string: data[key].data?.connection_string || "",
-            status: index % 2 === 0 ? "active" : "inactive", // Mock status
-            data: data[key].data, // Full data for JSON download
+            data: data[key].data || {},
+            status: index % 2 === 0 ? "active" : "inactive",
           }));
 
       setStorages(storagesArray);
@@ -53,17 +56,42 @@ const StorageManager = () => {
     }
   };
 
-  const handleDialogOpen = (
-    storage = { name: "", type: "", connection_string: "" }
-  ) => {
-    setCurrentStorage(storage);
-    setEditMode(!!storage.name);
+  const handleDialogOpen = (storage = { name: "", type: "", data: {} }) => {
+    let parsedData = { ...storage.data };
+
+    // Asegurar que los datos sean correctos para cada tipo
+    if (storage.type === "AZURE") {
+      parsedData = {
+        connection_string: storage.data?.connection_string || "",
+        container_name: storage.data?.container_name || "",
+      };
+    } else if (storage.type === "AWS") {
+      parsedData = {
+        bucket_name: storage.data?.bucket_name || "",
+        access_key: storage.data?.access_key || "", // Corregido para que coincida con "access_key"
+        secret_key: storage.data?.secret_key || "", // Corregido para que coincida con "secret_key"
+        region_name: storage.data?.region_name || "",
+      };
+    } else if (storage.type === "GCP") {
+      parsedData = {
+        bucket_name: storage.data?.bucket_name || "",
+        credentials: storage.data?.credentials || {},
+      };
+    }
+
+    setCurrentStorage({
+      name: storage.name,
+      type: storage.type,
+      data: parsedData,
+    });
+
+    setEditMode(!!storage.name); // Si storage tiene nombre, está en modo edición
     setDialogOpen(true);
   };
 
   const handleDialogClose = () => {
     setDialogOpen(false);
-    setCurrentStorage({ name: "", type: "", connection_string: "" });
+    setCurrentStorage({ name: "", type: "", data: {} });
     setEditMode(false);
   };
 
@@ -76,9 +104,7 @@ const StorageManager = () => {
     const payload = {
       connection_name: currentStorage.name,
       cloud: currentStorage.type,
-      data: {
-        connection_string: currentStorage.connection_string,
-      },
+      data: currentStorage.data,
     };
 
     await fetch(endpoint, {
@@ -96,28 +122,135 @@ const StorageManager = () => {
     fetchStorages();
   };
 
-  const handleDownloadConfiguration = (storage) => {
-    const fileName = `${storage.name}-configuration.json`;
-    const fileContent = JSON.stringify(
-      {
-        [storage.name]: {
-          cloud: storage.type,
-          data: storage.data,
-        },
-      },
-      null,
-      2
-    ); // Formato exacto
+  const handleFieldChange = (field, value) => {
+    if (field === "type") {
+      // Reset data when changing cloud type
+      setCurrentStorage({ ...currentStorage, type: value, data: {} });
+    } else {
+      setCurrentStorage({ ...currentStorage, [field]: value });
+    }
+  };
 
-    const blob = new Blob([fileContent], { type: "application/json" });
+  const handleDataFieldChange = (field, value) => {
+    setCurrentStorage({
+      ...currentStorage,
+      data: { ...currentStorage.data, [field]: value },
+    });
+  };
 
-    // Crear un enlace para descargar el archivo
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = fileName;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const renderDynamicFields = () => {
+    switch (currentStorage.type) {
+      case "AZURE":
+        return (
+          <>
+            <TextField
+              label="Connection String"
+              value={currentStorage.data.connection_string || ""}
+              onChange={(e) =>
+                handleDataFieldChange("connection_string", e.target.value)
+              }
+              fullWidth
+              margin="dense"
+              required
+            />
+            <TextField
+              label="Container Name"
+              value={currentStorage.data.container_name || ""}
+              onChange={(e) =>
+                handleDataFieldChange("container_name", e.target.value)
+              }
+              fullWidth
+              margin="dense"
+              required
+            />
+          </>
+        );
+      case "AWS":
+        return (
+          <>
+            <TextField
+              label="Bucket Name"
+              value={currentStorage.data.bucket_name || ""}
+              onChange={(e) =>
+                handleDataFieldChange("bucket_name", e.target.value)
+              }
+              fullWidth
+              margin="dense"
+              required
+            />
+            {console.log(currentStorage.data)}
+            <TextField
+              label="Access Key"
+              value={currentStorage.data.access_key || ""} // Cambiado para que coincida con el nombre de la clave
+              onChange={
+                (e) => handleDataFieldChange("access_key", e.target.value) // Cambiado para que coincida con el nombre de la clave
+              }
+              fullWidth
+              margin="dense"
+              required
+            />
+            <TextField
+              label="Secret Key"
+              value={currentStorage.data.secret_key || ""} // Cambiado para que coincida con el nombre de la clave
+              onChange={
+                (e) => handleDataFieldChange("secret_key", e.target.value) // Cambiado para que coincida con el nombre de la clave
+              }
+              fullWidth
+              margin="dense"
+              required
+            />
+            <TextField
+              label="Region Name"
+              value={currentStorage.data.region_name || ""}
+              onChange={(e) =>
+                handleDataFieldChange("region_name", e.target.value)
+              }
+              fullWidth
+              margin="dense"
+              required
+            />
+          </>
+        );
+
+      case "GCP":
+        return (
+          <>
+            <TextField
+              label="Bucket Name"
+              value={currentStorage.data.bucket_name || ""}
+              onChange={(e) =>
+                handleDataFieldChange("bucket_name", e.target.value)
+              }
+              fullWidth
+              margin="dense"
+              required
+            />
+            <TextField
+              label="JSON Credentials"
+              value={
+                currentStorage.data.credentials
+                  ? JSON.stringify(currentStorage.data.credentials, null, 2)
+                  : ""
+              }
+              onChange={(e) => {
+                try {
+                  const parsedCredentials = JSON.parse(e.target.value);
+                  handleDataFieldChange("credentials", parsedCredentials);
+                } catch (error) {
+                  console.error("Invalid JSON format:", error);
+                }
+              }}
+              fullWidth
+              margin="dense"
+              required
+              multiline
+              helperText="Paste your JSON credentials here."
+            />
+          </>
+        );
+      default:
+        return null;
+    }
   };
 
   return (
@@ -147,18 +280,8 @@ const StorageManager = () => {
                     }}
                   />
                 </TableCell>
-                <TableCell align="center" style={{display:"flex", flexDirection:"row", alignContent:"space-around", width:"90%"}}>
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    style={{maxWidth:"200px", fontSize:"12px"}}
-                    onClick={() => handleDownloadConfiguration(storage)}
-                  >
-                    Download Configuration
-                  </Button>
-                  <Button
-                    onClick={() => handleDialogOpen(storage)}
-                  >
+                <TableCell align="center">
+                  <Button onClick={() => handleDialogOpen(storage)}>
                     <FaEdit />
                   </Button>
                   <Button
@@ -182,7 +305,6 @@ const StorageManager = () => {
         Add Storage
       </Button>
 
-      {/* Dialog for Add/Edit */}
       <Dialog open={dialogOpen} onClose={handleDialogClose}>
         <DialogTitle>
           {editMode ? "Edit Storage" : "Add New Storage"}
@@ -191,34 +313,27 @@ const StorageManager = () => {
           <TextField
             label="Storage Name"
             value={currentStorage.name}
-            onChange={(e) =>
-              setCurrentStorage({ ...currentStorage, name: e.target.value })
-            }
+            onChange={(e) => handleFieldChange("name", e.target.value)}
             fullWidth
             margin="dense"
             disabled={editMode}
+            required
           />
-          <TextField
-            label="Type"
-            value={currentStorage.type}
-            onChange={(e) =>
-              setCurrentStorage({ ...currentStorage, type: e.target.value })
-            }
-            fullWidth
-            margin="dense"
-          />
-          <TextField
-            label="Connection String"
-            value={currentStorage.connection_string}
-            onChange={(e) =>
-              setCurrentStorage({
-                ...currentStorage,
-                connection_string: e.target.value,
-              })
-            }
-            fullWidth
-            margin="dense"
-          />
+          <FormControl fullWidth margin="dense">
+            <InputLabel>Type</InputLabel>
+            <Select
+              value={currentStorage.type}
+              onChange={(e) => handleFieldChange("type", e.target.value)}
+              required
+              disabled={editMode} // Deshabilitado en modo edición
+            >
+              <MenuItem value="AZURE">Azure</MenuItem>
+              <MenuItem value="AWS">AWS</MenuItem>
+              <MenuItem value="GCP">GCP</MenuItem>
+            </Select>
+          </FormControl>
+
+          {renderDynamicFields()}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleDialogClose} color="primary">

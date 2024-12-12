@@ -176,7 +176,7 @@ const RepositoryManager = () => {
 
       {/* Dialog for Add/Edit */}
       <Dialog open={dialogOpen} onClose={handleDialogClose}>
-        <DialogTitle>
+        <DialogTitle> 
           {editMode ? "Edit Repository" : "Add New Repository"}
         </DialogTitle>
         <DialogContent>
