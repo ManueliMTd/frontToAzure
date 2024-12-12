@@ -47,7 +47,7 @@ function HomePage({ setIsLoggedIn }) {
     setAddCertificatesToStorages(storagesHeight <= repositoriesHeight);
   }, []);
 
-  const url = `${API_BASE_URL}/contentserver/receive`;
+  const url = `${API_BASE_URL}/sap`;
 
   const handleCopyClick = () => {
     navigator.clipboard.writeText(url).then(
