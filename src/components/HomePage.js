@@ -220,7 +220,7 @@ function HomePage({ setIsLoggedIn }) {
                   alignItems: "center",
                 }}
               >
-                Your SAP Content Server URL:
+                Your Content Server URL:
                 <a
                   href={url}
                   target="_blank"
@@ -231,7 +231,7 @@ function HomePage({ setIsLoggedIn }) {
                     color: "blue",
                   }}
                 >
-                  {url}
+                  {"https://storingfunctions.azurewebsites.net"}
                 </a>
                 {/* Usamos un emoji de copiar */}
                 <span
